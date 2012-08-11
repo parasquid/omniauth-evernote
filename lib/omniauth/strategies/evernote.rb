@@ -1,5 +1,4 @@
 require 'omniauth/strategies/oauth'
-require 'evernote'
 
 module OmniAuth
   module Strategies
@@ -27,10 +26,11 @@ module OmniAuth
 
       def raw_info
         @raw_info ||= begin
-          user_store_url = consumer.site + '/edam/user'
-          client = ::Evernote::Client.new(::Evernote::EDAM::UserStore::UserStore::Client, user_store_url, {})
-          #client.getUser(access_token.token)
-          OpenStruct.new(id: access_token.params[:edam_userId])
+          userStoreUrl = consumer.site + '/edam/user'
+          userStoreTransport = ::Thrift::HTTPClientTransport.new(userStoreUrl)
+          userStoreProtocol = ::Thrift::BinaryProtocol.new(userStoreTransport)
+          userStore = ::Evernote::EDAM::UserStore::UserStore::Client.new(userStoreProtocol)
+          userStore.getUser access_token.token
         end
       end
     end
