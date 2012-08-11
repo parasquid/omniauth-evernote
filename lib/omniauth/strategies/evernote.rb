@@ -29,7 +29,8 @@ module OmniAuth
         @raw_info ||= begin
           user_store_url = consumer.site + '/edam/user'
           client = ::Evernote::Client.new(::Evernote::EDAM::UserStore::UserStore::Client, user_store_url, {})
-          client.getUser(access_token.token)
+          #client.getUser(access_token.token)
+          OpenStruct.new(id: access_token.params[:edam_userId])
         end
       end
     end
